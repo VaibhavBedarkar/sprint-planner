@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Button, HStack } from "@chakra-ui/react"
 import './App.css'
+import { createContext, useEffect, useMemo, useReducer } from "react"
+import Planner from "./components/Planner";
+import { taskReducer } from "./reducers/taskReducer";
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const theme = useMemo(() => ({ isDark: false, primaryColor: 'blue' }), []);
+  const [tasks, dispatch] = useReducer(taskReducer, []);
+
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('kanban-tasks');
+    if (savedTasks) {
+      try {
+        dispatch({ type: 'SET_TASKS', payload: JSON.parse(savedTasks) });
+      } catch (error) {
+        console.error('Error loading tasks:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('kanban-tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+
+          <Planner />
+       
+  );
 }
 
-export default App
+export default App;
